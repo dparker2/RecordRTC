@@ -1,7 +1,7 @@
 {
   "name": "recordrtc",
   "preferGlobal": false,
-  "version": "5.6.3",
+  "version": "5.6.3-dparker2-chrome-ios-patch",
   "author": {
     "name": "Muaz Khan",
     "email": "muazkh@gmail.com",

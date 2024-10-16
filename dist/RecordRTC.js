@@ -101,10 +101,10 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global, process) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-// Last time updated: 2020-07-30 11:26:25 AM UTC
+// Last time updated: 2024-10-16 10:13:46 PM UTC
 
 // ________________
-// RecordRTC v5.6.1
+// RecordRTC v5.6.3-dparker2-chrome-ios-patch
 
 // Open-Sourced: https://github.com/muaz-khan/RecordRTC
 
@@ -882,7 +882,7 @@ function RecordRTC(mediaStream, config) {
          * @example
          * alert(recorder.version);
          */
-        version: '5.6.1'
+        version: '5.6.3-dparker2-chrome-ios-patch'
     };
 
     if (!this) {
@@ -900,7 +900,7 @@ function RecordRTC(mediaStream, config) {
     return returnObject;
 }
 
-RecordRTC.version = '5.6.1';
+RecordRTC.version = '5.6.3-dparker2-chrome-ios-patch';
 
 if (true /* && !!module.exports*/ ) {
     module.exports = RecordRTC;
@@ -1856,11 +1856,6 @@ var isChrome = (!isOpera && !isEdge && !!navigator.webkitGetUserMedia) || isElec
 
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-if (isSafari && !isChrome && navigator.userAgent.indexOf('CriOS') !== -1) {
-    isSafari = false;
-    isChrome = true;
-}
-
 var MediaStream = window.MediaStream;
 
 if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
@@ -1917,7 +1912,10 @@ function invokeSaveAsDialog(file, fileName) {
     }
 
     var fileExtension = (file.type || 'video/webm').split('/')[1];
-
+    if (fileExtension.indexOf(';') !== -1) {
+        // extended mimetype, e.g. 'video/webm;codecs=vp8,opus'
+        fileExtension = fileExtension.split(';')[0];
+    }
     if (fileName && fileName.indexOf('.') !== -1) {
         var splitted = fileName.split('.');
         fileName = splitted[0];
@@ -2360,10 +2358,10 @@ function MediaStreamRecorder(mediaStream, config) {
             updateTimeStamp();
             mediaRecorder.start(config.timeSlice);
         } else {
-            // default is 60 minutes; enough?
+            // default is 24 hours; enough? (thanks https://github.com/slidevjs/slidev/pull/488)
             // use config => {timeSlice: 1000} otherwise
 
-            mediaRecorder.start(3.6e+6);
+            mediaRecorder.start(24 * 60 * 60 * 1000);
         }
 
         if (config.initCallback) {
@@ -2858,7 +2856,7 @@ function StereoAudioRecorder(mediaStream, config) {
             view.setUint32(24, sampleRate, true);
 
             // byte rate (sample rate * block align)
-            view.setUint32(28, sampleRate * 2, true);
+            view.setUint32(28, sampleRate * numberOfAudioChannels * 2, true);
 
             // block align (channel count * bytes per sample) 
             view.setUint16(32, numberOfAudioChannels * 2, true);
@@ -4669,9 +4667,7 @@ if (typeof RecordRTC !== 'undefined') {
 
 function GifRecorder(mediaStream, config) {
     if (typeof GIFEncoder === 'undefined') {
-        var script = document.createElement('script');
-        script.src = 'https://www.webrtc-experiment.com/gif-recorder.js';
-        (document.body || document.documentElement).appendChild(script);
+        throw new Error('Missing https://www.webrtc-experiment.com/gif-recorder.js');
     }
 
     config = config || {};
@@ -6027,7 +6023,7 @@ function RecordRTCPromisesHandler(mediaStream, options) {
      * @example
      * alert(recorder.version);
      */
-    this.version = '5.6.1';
+    this.version = '5.6.3-dparker2-chrome-ios-patch';
 }
 
 if (typeof RecordRTC !== 'undefined') {
